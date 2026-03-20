@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Santé des serveurs</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    h1 {
+        margin-top: 30px;
+        font-size: 2.2em;
+        color: #333;
+    }
+
+    .site-box {
+        width: 400px;
+        margin: 40px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        text-align: left;
+    }
+
+    .site-title {
+        font-size: 1.4em;
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: bold;
+        color: #444;
+    }
+
+    .server {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        font-size: 1.1em;
+    }
+
+    .dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .green { background: #28a745; }
+    .red { background: #dc3545; }
+
+    .timestamp {
+        margin-left: auto;
+        font-size: 0.9em;
+        color: #666;
+    }
+</style>
+</head>
+<body>
+
+<h1>Santé des serveurs</h1>
+
+<div class="site-box">
+    <div class="site-title">Ste Marie</div>
+    <div id="servers"></div>
+</div>
+
+<script>
+async function refreshStatus() {
+    const response = await fetch("https://healthpreview.bonnetfredjob.workers.dev/status");
+    const data = await response.json();
+
+    const container = document.getElementById("servers");
+    container.innerHTML = "";
+
+    const now = Date.now();
+
+    for (const [server, timestamp] of Object.entries(data)) {
+        const lastPing = new Date(timestamp).getTime();
+        const diffMinutes = (now - lastPing) / 60000;
+
+        const isUp = diffMinutes < 10; // < 10 minutes = vert
+
+        const div = document.createElement("div");
+        div.className = "server";
+
+        div.innerHTML = `
+            <div class="dot ${isUp ? "green" : "red"}"></div>
+            <span>${server}</span>
+            <span class="timestamp">${diffMinutes.toFixed(1)} min</span>
+        `;
+
+        container.appendChild(div);
+    }
+}
+
+// Rafraîchit toutes les 30 secondes
+refreshStatus();
+setInterval(refreshStatus, 30000);
+</script>
+
+</body>
+</html>
