@@ -28,9 +28,16 @@
         color: white;
     }
 
+    /* Conteneur des deux cadres */
+    .container {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 30px;
+    }
+
     .site-box {
         width: 400px;
-        margin: 40px auto;
         background: rgba(255,255,255,0.85);
         padding: 20px;
         border-radius: 12px;
@@ -88,9 +95,20 @@
 
 <h1>Santé des serveurs</h1>
 
-<div class="site-box">
-    <div class="site-title">Ste Marie</div>
-    <div id="servers"></div>
+<div class="container">
+
+    <!-- Cadre Carlo Acutis -->
+    <div class="site-box">
+        <div class="site-title">Carlo Acutis</div>
+        <div id="servers-CA"></div>
+    </div>
+
+    <!-- Cadre Ste Marie -->
+    <div class="site-box">
+        <div class="site-title">Ste Marie</div>
+        <div id="servers-SM"></div>
+    </div>
+
 </div>
 
 <script>
@@ -98,10 +116,14 @@ async function refreshStatus() {
     const response = await fetch("https://healthpreview.bonnetfredjob.workers.dev/status");
     const data = await response.json();
 
-    const container = document.getElementById("servers");
-    container.innerHTML = "";
-
     const now = Date.now();
+
+    // Conteneurs des deux cadres
+    const boxSM = document.getElementById("servers-SM");
+    const boxCA = document.getElementById("servers-CA");
+
+    boxSM.innerHTML = "";
+    boxCA.innerHTML = "";
 
     for (const [server, timestamp] of Object.entries(data)) {
 
@@ -110,8 +132,7 @@ async function refreshStatus() {
 
         const lastPing = new Date(timestamp).getTime();
         const diffMinutes = (now - lastPing) / 60000;
-
-        const isUp = diffMinutes < 10; // < 10 minutes = vert
+        const isUp = diffMinutes < 10;
 
         const div = document.createElement("div");
         div.className = "server";
@@ -122,7 +143,12 @@ async function refreshStatus() {
             <span class="timestamp">${diffMinutes.toFixed(1)} min</span>
         `;
 
-        container.appendChild(div);
+        // Répartition automatique
+        if (server.startsWith("CA")) {
+            boxCA.appendChild(div);
+        } else if (server.startsWith("SM")) {
+            boxSM.appendChild(div);
+        }
     }
 }
 
