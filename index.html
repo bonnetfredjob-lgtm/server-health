@@ -97,6 +97,18 @@
         font-size: 0.9em;
         color: #666;
     }
+
+    #status-image-container {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    }
+    
+    #status-image {
+        width: 300px;
+        max-width: 80%;
+    }
+    
 </style>
 </head>
 
@@ -133,7 +145,6 @@ async function refreshStatus() {
 
     const now = Date.now();
 
-    // Conteneurs des deux cadres
     const boxSM = document.getElementById("servers-SM");
     const boxCA = document.getElementById("servers-CA");
     const boxSL = document.getElementById("servers-SL");
@@ -142,14 +153,17 @@ async function refreshStatus() {
     boxCA.innerHTML = "";
     boxSL.innerHTML = "";
 
+    let redCount = 0; // Compteur de voyants rouges
+
     for (const [server, timestamp] of Object.entries(data)) {
 
-        // ❌ On ignore le serveur "test"
         if (server.toLowerCase() === "test") continue;
 
         const lastPing = new Date(timestamp).getTime();
         const diffMinutes = (now - lastPing) / 60000;
-        const isUp = diffMinutes < 12;
+        const isUp = diffMinutes < 10;
+
+        if (!isUp) redCount++; // On compte les rouges
 
         const div = document.createElement("div");
         div.className = "server";
@@ -160,21 +174,38 @@ async function refreshStatus() {
             <span class="timestamp">${diffMinutes.toFixed(1)} min</span>
         `;
 
-        // Répartition automatique
         if (server.startsWith("CA")) {
             boxCA.appendChild(div);
         } else if (server.startsWith("SM")) {
             boxSM.appendChild(div);
-        }  else if (server.startsWith("SL")) {
+        } else if (server.startsWith("SL")) {
             boxSL.appendChild(div);
         }
     }
+
+    // 🎯 Mise à jour de l'image selon le nombre de rouges
+    const img = document.getElementById("status-image");
+
+    if (redCount === 0) {
+        img.src = "ChampiHappy.png";
+    } else if (redCount === 1) {
+        img.src = "ChampiInquiet1.png";
+    } else if (redCount === 2) {
+        img.src = "ChampiInquiet2.png";
+    } else if (redCount === 3) {
+        img.src = "ChampiPleure1.png";
+    } else {
+        img.src = "ChampiPleure2.png";
+    }
 }
 
-// Rafraîchit toutes les 30 secondes
 refreshStatus();
 setInterval(refreshStatus, 30000);
 </script>
-
+    
+    <div id="status-image-container">
+        <img id="status-image" src="" alt="État général" />
+    </div>
+    
 </body>
 </html>
