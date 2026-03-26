@@ -28,12 +28,21 @@
         color: white;
     }
 
-    /* Conteneur des deux cadres */
+    /* Disposition par défaut : portrait → cadres empilés */
     .container {
         display: flex;
-        justify-content: center;
+        flex-direction: column;   /* empile les cadres */
+        align-items: center;
         gap: 40px;
         margin-top: 30px;
+    }
+
+    /* Mode paysage → cadres côte à côte */
+    @media (orientation: landscape) {
+        .container {
+            flex-direction: row;  /* place les cadres côte à côte */
+            justify-content: center;
+        }
     }
 
     .site-box {
