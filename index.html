@@ -121,9 +121,11 @@ async function refreshStatus() {
     // Conteneurs des deux cadres
     const boxSM = document.getElementById("servers-SM");
     const boxCA = document.getElementById("servers-CA");
+    const boxSL = document.getElementById("servers-SL");
 
     boxSM.innerHTML = "";
     boxCA.innerHTML = "";
+    boxSL.innerHTML = "";
 
     for (const [server, timestamp] of Object.entries(data)) {
 
@@ -148,6 +150,8 @@ async function refreshStatus() {
             boxCA.appendChild(div);
         } else if (server.startsWith("SM")) {
             boxSM.appendChild(div);
+        }  else if (server.startsWith("SL")) {
+            boxSL.appendChild(div);
         }
     }
 }
