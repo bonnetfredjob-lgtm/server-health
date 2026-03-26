@@ -161,7 +161,7 @@ async function refreshStatus() {
 
         const lastPing = new Date(timestamp).getTime();
         const diffMinutes = (now - lastPing) / 60000;
-        const isUp = diffMinutes < 10;
+        const isUp = diffMinutes < 12;
 
         if (!isUp) redCount++; // On compte les rouges
 
